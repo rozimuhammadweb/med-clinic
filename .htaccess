@@ -1,0 +1,54 @@
+Options FollowSymLinks
+AddDefaultCharset utf-8
+
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+
+    RewriteRule ^uploads/(.*)$ /backend/web/uploads/$1 [L]
+    # the main rewrite rule for the frontend application
+    RewriteCond %{REQUEST_URI} !^/(backend/web|admin)
+    RewriteRule !^frontend/web /frontend/web%{REQUEST_URI} [L]
+
+    # redirect to the page without a trailing slash (uncomment if necessary)
+    #RewriteCond %{REQUEST_URI} ^/admin/$
+    #RewriteRule ^(admin)/ /$1 [L,R=301]
+    # the main rewrite rule for the backend application
+    RewriteCond %{REQUEST_URI} ^/admin
+    RewriteRule ^admin(.*) /backend/web/$1 [L]
+
+    # if a directory or a file of the frontend application exists, use the request directly
+    RewriteCond %{REQUEST_URI} ^/frontend/web
+    RewriteCond %{REQUEST_FILENAME} !-f
+    RewriteCond %{REQUEST_FILENAME} !-d
+    # otherwise forward the request to index.php
+    RewriteRule . /frontend/web/index.php [L]
+
+    # if a directory or a file of the backend application exists, use the request directly
+    RewriteCond %{REQUEST_URI} ^/backend/web
+    RewriteCond %{REQUEST_FILENAME} !-f
+    RewriteCond %{REQUEST_FILENAME} !-d
+    # otherwise forward the request to index.php
+    RewriteRule . /backend/web/index.php [L]
+
+    RewriteCond %{REQUEST_URI} \.(htaccess|htpasswd|svn|git)
+    RewriteRule \.(htaccess|htpasswd|svn|git) - [F]
+</IfModule>
+
+#RewriteCond %{REQUEST_FILENAME} !-f
+#RewriteCond %{REQUEST_FILENAME} !-d
+#RewriteRule . /frontend/web/index.php
+
+# DIQQAT videoni yozish jarayonida ba'zi JS, CSS fayllar nimagadir yuklanmagan edi.
+# Bu muammoni quyidagicha hal qilinadi:
+# Asosiy papkadagi .htaccessga yuqoridagidek yoziladi :
+# Ya'ni asosiy papkadagi .htaccess faylidan yuqoridagi 8,9,10 - qatordagilarni o'chirsak bo'ladi
+# RewriteRule (.*) /frontend/web/$1 - bu degani hamma requestlarni frontend/web papkasiga yo'naltirsin
+# frontend/web - papkasida ham .htaccess faylini qo'shamiz
+# frontend/web papkadagi .htaccess fayli kelayotgan barcha so'rovlarni index.phpga yo'naltirsin deb ko'rsatilgan
+# endi frontend/web papkasiga o'zimiz xohlagancha papka va fayllar hosil qilishimiz mumkin
+# web papkadagi papka nomlarini .htaccess faylida ko'rsatish shart emas
+
+
+
+
+
